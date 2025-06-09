@@ -1,9 +1,0 @@
-[
-    {"langs": ["p-indo-european"], "source": null},
-    {"langs": ["p-germanic", "p-celtic", "p-balto-slavic", "latin"], "source": "p-indo-european"},
-    {"langs": ["p-goidelic", "p-brythonic"], "source": "p-celtic"},
-    {"langs": ["p-baltic", "p-slavic"], "source": "p-balto-slavic"},
-    {"langs": ["p-west-germanic", "old-norse"], "source": "p-germanic"},
-    {"langs": ["french", "spanish", "romanian", "italian"], "source": "latin"},
-    {"langs": ["english", "german", "dutch"], "source": "p-germanic"}
-]
