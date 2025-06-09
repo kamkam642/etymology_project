@@ -1,0 +1,1 @@
+a structure for storing and editing etymological data
