@@ -1,4 +1,0 @@
-p-abc
-p-ab, p-c from p-abc
-a, b from p-ab
-c from p-c
