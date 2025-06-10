@@ -1,0 +1,78 @@
+{
+    "lang_graph": {
+        "directed": true,
+        "multigraph": false,
+        "graph": {},
+        "nodes": [
+            {
+                "id": "p-omaic"
+            },
+            {
+                "id": "p-west-omaic"
+            },
+            {
+                "id": "mirzu"
+            },
+            {
+                "id": "nejumist"
+            }
+        ],
+        "edges": []
+    },
+    "root_graph": {
+        "directed": true,
+        "multigraph": false,
+        "graph": {},
+        "nodes": [
+            {
+                "id": "p-omaic *buta big"
+            },
+            {
+                "id": "p-omaic *kosaa dark"
+            },
+            {
+                "id": "p-west-omaic *bu\u00f0 big"
+            },
+            {
+                "id": "p-west-omaic *k\u0254s black"
+            }
+        ],
+        "edges": []
+    },
+    "langs": [
+        {
+            "name": "p-omaic",
+            "info": null
+        },
+        {
+            "name": "p-west-omaic",
+            "info": null
+        },
+        {
+            "name": "mirzu",
+            "info": null
+        },
+        {
+            "name": "nejumist",
+            "info": null
+        }
+    ],
+    "roots": [
+        {
+            "root": "p-omaic *buta big",
+            "info": null
+        },
+        {
+            "root": "p-omaic *kosaa dark",
+            "info": null
+        },
+        {
+            "root": "p-west-omaic *bu\u00f0 big",
+            "info": null
+        },
+        {
+            "root": "p-west-omaic *k\u0254s black",
+            "info": null
+        }
+    ]
+}

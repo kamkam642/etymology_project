@@ -1,0 +1,52 @@
+{
+    "root_graph": null,
+    "lang_graph": null,
+    "langs": [
+        {
+            "name": "p-omaic",
+            "source": null,
+            "info": null
+        },
+        {
+            "name": "p-west-omaic",
+            "source": "p-omaic",
+            "info": null
+        },
+        {
+            "name": "mirzu",
+            "source": "p-west-omaic",
+            "info": null
+        },
+        {
+            "name": "nejumist",
+            "source": "p-west-omaic",
+            "info": null
+        }
+    ],
+    "roots": [
+        {
+            "root": "p-omaic *buta big",
+            "sources": [],
+            "info": null
+        },
+        {
+            "root": "p-omaic *kosaa dark",
+            "sources": [],
+            "info": null
+        },
+        {
+            "root": "p-west-omaic *bu\u00f0 big",
+            "sources": [
+                "p-omaic *buta big"
+            ],
+            "info": null
+        },
+        {
+            "root": "p-west-omaic *k\u0254s black",
+            "sources": [
+                "p-omaic *kosaa dark"
+            ],
+            "info": null
+        }
+    ]
+}

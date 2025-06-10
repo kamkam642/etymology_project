@@ -11,20 +11,20 @@ class EtymologyData():
         self.lang_graph, self.root_graph = DiGraph(), DiGraph()
         self.langs, self.roots = {}, {}
         if path:
-            with open(path) as f:
-                data = load(f)
-            self.langs_graph = nl_graph(data['lang_graph'], edges='edges')
-            self.roots_graph = nl_graph(data['root_graph'], edges='edges')
-            for lang in data['langs']:
-                self._create_lang(lang['name'], lang['info'])
-            for root in data['roots']:
-                self._create_root(root['root'], root['info'])
+            self.read_json(path)
 
-    def _json(self) -> dict:
-        return {'root_graph': nl_data(self.root_graph, edges='edges'),
-                'lang_graph': nl_data(self.lang_graph, edges='edges'),
-                'langs': [v._json() for k, v in self.langs.items()],
-                'roots': [v._json() for k, v in self.roots.items()]}
+    def _dict_json(self) -> dict:
+        '''returns database as a dict, relying on sources for relationships'''
+        return {'root_graph': None, 'lang_graph': None,
+                'langs': [v._dict_json() for k, v in self.langs.items()],
+                'roots': [v._dict_json() for k, v in self.roots.items()]}
+
+    def _graph_json(self) -> dict:
+        '''returns database as a dict, relying on graphs for relationships'''
+        return {'lang_graph': nl_data(self.lang_graph, edges='edges'),
+                'root_graph': nl_data(self.root_graph, edges='edges'),
+                'langs': [v._graph_json() for k, v in self.langs.items()],
+                'roots': [v._graph_json() for k, v in self.roots.items()]}
 
     def _create_lang(self, name: str, info: dict | None = None):
         '''adds a lang to the graph and database'''
@@ -92,23 +92,49 @@ class EtymologyData():
                     self.root_graph.add_edge(source, root)
 
     def add_langs_from(self, langs: list[str],
-                       sources: list[str] | None = None,
+                       sources: list[str | None] | None = None,
                        info: dict | None = None):
         '''adds a list of langs with an optional list of sources'''
         for lang, source in zip(langs, sources):
             self.add_lang(lang, source, info)
 
     def add_roots_from(self, roots: list[str],
-                       sources: list[list[str]] | None = None,
+                       sources: list[list[str | None]] | None = None,
                        info: dict | None = None):
         '''adds a list of roots with an optional list of sources'''
-        for root, sources in zip(roots, sources):
-            self.add_root(root, sources, info)
+        if sources:
+            for root, sources in zip(roots, sources):
+                self.add_root(root, sources, info)
+        else:
+            for root in roots:
+                self.add_root(root, info)
 
-    def write_json(self, path: str, graph: bool = False):
-        '''writes data to a json file in the specified format'''
+    def write_graph_json(self, path: str):
+        '''writes data to a json file as 2 graphs and 2 lists'''
         with open(path, 'w') as f:
-            dump(self._json(), f, indent=4)
+            dump(self._graph_json(), f, indent=4)
+
+    def write_dict_json(self, path: str):
+        '''writes data to a json file as 2 lists'''
+        with open(path, 'w') as f:
+            dump(self._dict_json(), f, indent=4)
+
+    def read_json(self, path: str):
+        '''reads in a json file'''
+        with open(path) as f:
+            data = load(f)
+        if data['lang_graph'] or data['root_graph']:
+            self.langs_graph = nl_graph(data['lang_graph'], edges='edges')
+            self.roots_graph = nl_graph(data['root_graph'], edges='edges')
+            for lang in data['langs']:
+                self._create_lang(lang['name'], lang['info'])
+            for root in data['roots']:
+                self._create_root(root['root'], root['info'])
+        else:
+            for lang in data['langs']:
+                self.add_lang(lang['name'], lang['source'], lang['info'])
+            for root in data['roots']:
+                self.add_root(root['root'], root['sources'], root['info'])
 
 
 class Lang():
@@ -132,9 +158,15 @@ class Lang():
             return next(self.db.roots[root] for root in self.vocab()
                         if root.split()[1] == key)
 
-    def _json(self, graph: bool = False) -> dict:
+    def _graph_json(self) -> dict:
         '''returns serializable lang data'''
         return {'name': self.name,
+                'info': self.info}
+
+    def _dict_json(self) -> dict:
+        '''returns serializable lang data with sources'''
+        return {'name': self.name,
+                'source': self.source(),
                 'info': self.info}
 
     def source(self) -> str | None:
@@ -170,9 +202,14 @@ class Root():
     def __str__(self) -> str:
         return ' '.join([self.lang, self.text, self.gloss])
 
-    def _json(self, graph: bool = False) -> dict:
+    def _graph_json(self) -> dict:
         '''returns serializable root data'''
         return {'root': str(self),
+                'info': self.info}
+
+    def _dict_json(self) -> dict:
+        return {'root': str(self),
+                'sources': self.sources(),
                 'info': self.info}
 
     def language(self) -> Lang:
