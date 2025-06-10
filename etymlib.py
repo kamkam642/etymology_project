@@ -1,5 +1,5 @@
 from __future__ import annotations
-from networkx import DiGraph
+from networkx import DiGraph, ancestors, descendants
 from networkx import node_link_data as nl_data, node_link_graph as nl_graph
 from json import load, dump
 
@@ -136,6 +136,12 @@ class EtymologyData():
             for root in data['roots']:
                 self.add_root(root['root'], root['sources'], root['info'])
 
+    def merge_with(self, db: EtymologyData):
+        self.langs |= db.langs
+        self.roots |= db.roots
+        self.lang_graph.update(db.lang_graph)
+        self.root_graph.update(db.root_graph)
+
 
 class Lang():
     '''a language'''
@@ -223,6 +229,14 @@ class Root():
         '''returns list of child roots'''
         return list(self.db.root_graph.predecessors(str(self)))
 
+    def ancestors(self) -> set[str]:
+        '''returns set of ancestor roots'''
+        return ancestors(self.db.root_graph, str(self))
+
+    def descendants(self) -> set[str]:
+        '''returns set of descendant roots'''
+        return descendants(self.db.root_graph, str(self))
+
     def is_compound(self) -> bool:
         '''true if the root has more than one source'''
         return len(self.sources()) > 1
@@ -233,3 +247,31 @@ class Root():
             return False
         elif self.sources():
             return self.sources()[0].split()[0] == self.language().source()
+
+    def remove(self, up: bool = False, down: bool = False,
+               link: bool = False) -> Root:
+        '''removes self from database in specified way'''
+        if link:
+            for source in self.sources():
+                for child in self.children():
+                    self.db.root_graph.add_edge(source, child)
+        if up:
+            for root in self.ancestors():
+                self.db.roots[root].remove()
+        if down:
+            for root in self.descendants():
+                self.db.roots[root].remove()
+            self.db.root_graph.remove_nodes_from(self.descendants())
+        self.db.root_graph.remove_node(str(self))
+        return self.db.roots.pop(str(self))
+
+    def replace(self, root: str | None = None, lang: str | None = None,
+                text: str | None = None, gloss: str | None = None):
+        if root:
+            self.lang, self.text, self.gloss = root.split
+        elif lang:
+            self.lang = lang
+        if text:
+            self.text = text
+        if gloss:
+            self.gloss = gloss

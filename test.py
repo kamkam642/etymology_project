@@ -2,9 +2,9 @@ import etymlib as et
 
 
 def main():
-    db = et.EtymologyData('./graph.json')
+    db = et.EtymologyData('./dict.json')
+    db.langs['p-west-omaic']['<black>'].remove()
     print(db.roots)
-    db.write_dict_json('./dict.json')
 
 
 if __name__ == '__main__':
